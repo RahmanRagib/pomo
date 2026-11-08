@@ -1,0 +1,123 @@
+version: 2
+
+project_name: pomo
+
+before:
+  hooks:
+    - go mod tidy
+    - go vet ./...
+    - go test ./...
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+changelog:
+  sort: asc
+  use: github
+  format: "{{ .SHA }}: {{ .Message }}{{ with .AuthorUsername }} (@{{ . }}){{ end }}"
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+      - "^refactor:"
+      - "^style:"
+  groups:
+    - title: 💥 Breaking Changes
+      regexp: '^.*?(\w+(\([[:word:]]+\))?!:).+$'
+      order: 0
+    - title: 🚀 Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: 🐛 Bug fixes
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 2
+    - title: 🧹 Others
+      order: 999
+
+archives:
+  - formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE
+      - pomo.yaml
+
+homebrew_casks:
+  - name: pomo
+    repository:
+      owner: Bahaaio
+      name: homebrew-pomo
+    homepage: https://github.com/RahmanRagib/pomo
+    description: A simple Pomodoro timer TUI application written in Go.
+    license: MIT
+
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/pomo"]
+          end
+
+winget:
+  - name: pomo
+    publisher: Bahaaio
+    homepage: https://github.com/Bahaaio
+    short_description: A simple Pomodoro timer TUI application written in Go.
+    license: MIT
+    repository:
+      owner: Bahaaio
+      name: winget-pkgs
+      branch: "pomo-{{.Version}}"
+      pull_request:
+        enabled: true
+        base:
+          owner: microsoft
+          name: winget-pkgs
+          branch: master
+
+nfpms:
+  - maintainer: Bahaa Mohamed <bahaa-dev@proton.me>
+    description: A simple Pomodoro timer TUI application written in Go.
+    homepage: https://github.com/RahmanRagib/pomo
+    license: MIT
+    formats:
+      - deb
+      - rpm
+
+release:
+  github:
+    owner: Bahaaio
+    name: pomo
+  name_template: "v{{.Version}}"
+  footer: |
+    ## Install
+
+    ### Go
+    ```bash
+    go install github.com/RahmanRagib/pomo@latest
+    ```
+
+    ### Download Binary
+    Download from the assets below for your platform.
+
+    ---

@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/Bahaaio/pomo/main/schema/pomo-config.schema.json",
+  "title": "Pomo Configuration",
+  "description": "Configuration schema for pomo - Terminal Pomodoro Timer",
+  "type": "object",
+  "properties": {
+    "onSessionEnd": {
+      "type": "string",
+      "description": "Action to take when a session ends",
+      "enum": ["ask", "start", "quit"],
+      "default": "ask"
+    },
+    "asciiArt": {
+      "type": "object",
+      "description": "ASCII art configuration for timer display",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable ASCII art fonts for timer display",
+          "default": true
+        },
+        "font": {
+          "type": "string",
+          "description": "ASCII art font to use for timer display",
+          "enum": ["mono12", "rebel", "ansi", "ansiShadow"],
+          "default": "mono12"
+        },
+        "color": {
+          "type": "string",
+          "description": "Color of the ASCII art timer (hex color or 'none')",
+          "pattern": "^(#[0-9a-fA-F]{6}|none)$",
+          "default": "#5A56E0",
+          "examples": ["#5A56E0", "#FF0000", "#00FF00", "none"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "work": {
+      "$ref": "#/definitions/task",
+      "description": "Work session configuration"
+    },
+    "break": {
+      "$ref": "#/definitions/task",
+      "description": "Break session configuration"
+    },
+    "longBreak": {
+      "type": "object",
+      "description": "Long break session configuration, inherits from break session with optional overrides",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable long break sessions after a set number of work sessions",
+          "default": true
+        },
+        "after": {
+          "type": "integer",
+          "description": "Number of work sessions before a long break",
+          "minimum": 1,
+          "default": 4
+        },
+        "duration": {
+          "$ref": "#/definitions/duration",
+          "description": "Long break duration"
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "duration": {
+      "type": "string",
+      "pattern": "^([0-9]+(s|m|h))+$",
+      "description": "Duration in Go time format (e.g., 25m, 5s, 1h30m)",
+      "examples": ["25m", "1h30m"]
+    },
+    "task": {
+      "type": "object",
+      "properties": {
+        "duration": {
+          "$ref": "#/definitions/duration",
+          "description": "Session duration"
+        },
+        "title": {
+          "type": "string",
+          "description": "Task display title",
+          "examples": ["focus time"]
+        },
+        "notification": {
+          "$ref": "#/definitions/notification",
+          "description": "Desktop notification settings"
+        },
+        "then": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "description": "Command and arguments"
+          },
+          "description": "Commands to run after session completion",
+          "examples": [[["spd-say", "Break time!"]]]
+        }
+      },
+      "additionalProperties": false
+    },
+    "notification": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable desktop notifications",
+          "default": true
+        },
+        "urgent": {
+          "type": "boolean",
+          "description": "Mark notification as urgent",
+          "default": false
+        },
+        "title": {
+          "type": "string",
+          "description": "Notification title text",
+          "examples": ["back to work!"]
+        },
+        "message": {
+          "type": "string",
+          "description": "Notification message text",
+          "examples": ["time to take a break", "back to work!"]
+        },
+        "icon": {
+          "type": "string",
+          "description": "Path to notification icon file",
+          "examples": ["~/my/icon.png", "C:\\Users\\me\\icon.ico"]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

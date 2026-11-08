@@ -1,0 +1,25 @@
+package cmd
+
+import (
+	"log"
+
+	"github.com/RahmanRagib/pomo/config"
+	"github.com/spf13/cobra"
+)
+
+var breakCmd = &cobra.Command{
+	Use:   "break [duration]",
+	Short: "Start a pomodoro break session",
+	Example: `  pomo break       # Start a break session
+  pomo break 15m   # Start 15 minute break session`,
+
+	Args: cobra.MaximumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Println("breakCmd args:", args)
+		runTask(config.BreakTask, cmd)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(breakCmd)
+}
