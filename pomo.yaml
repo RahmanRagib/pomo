@@ -20,6 +20,11 @@ work:
     # icon: ~/path/to/icon.png
   # then:
   #   - [spd-say, "Time to take a break"]
+  # alarm-style beep (Windows): 3 parallel entries stack into a louder tone
+  # then:
+  #   - [powershell, -NoProfile, -Command, "1..6 | % { [console]::beep(1568,370); [console]::beep(1174,330) }"]
+  #   - [powershell, -NoProfile, -Command, "1..6 | % { [console]::beep(1568,370); [console]::beep(1174,330) }"]
+  #   - [powershell, -NoProfile, -Command, "1..6 | % { [console]::beep(1568,370); [console]::beep(1174,330) }"]
 
 break:
   duration: 5m
@@ -32,6 +37,7 @@ break:
     # icon: C:\Users\path\to\your\icon.png
   # then:
   #   - [spd-say, "Back to work!"]
+  #   - [powershell, -NoProfile, -Command, "1..6 | % { [console]::beep(1568,370); [console]::beep(1174,330) }"]
 
 longBreak:
   enabled: true
