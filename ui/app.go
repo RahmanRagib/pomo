@@ -2,6 +2,7 @@
 package ui
 
 import (
+	"github.com/RahmanRagib/pomo/sound"
 	"github.com/RahmanRagib/pomo/ui/confirm"
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/timer"
@@ -10,6 +11,7 @@ import (
 )
 
 func (m Model) Init() tea.Cmd {
+	go sound.Start()
 	return m.timer.Init()
 }
 

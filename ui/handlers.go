@@ -9,6 +9,7 @@ import (
 	"github.com/RahmanRagib/pomo/actions"
 	"github.com/RahmanRagib/pomo/config"
 	"github.com/RahmanRagib/pomo/db"
+	"github.com/RahmanRagib/pomo/sound"
 	"github.com/RahmanRagib/pomo/ui/confirm"
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/progress"
@@ -176,6 +177,12 @@ func (m *Model) handleCompletion() tea.Cmd {
 	ctx, cancel := context.WithTimeout(context.Background(), actions.CommandTimeout)
 	m.commandsCancel = cancel
 	m.commandsWg = actions.RunPostActions(ctx, m.currentTask)
+
+	bellCtx, bellCancel := context.WithTimeout(context.Background(), sound.BellDuration+time.Second)
+	go func() {
+		sound.Bell(bellCtx)
+		bellCancel()
+	}()
 
 	// continue after the completion according to config
 	switch m.onSessionEnd {
